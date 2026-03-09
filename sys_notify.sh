@@ -72,13 +72,23 @@ battery_level() {
     fi
 
     if [ "$capacity" -le 10 ]; then
-        notify-send "" "" -i "$ICONS_CRITICAL/battery.png)" \
-            --hint="string:wired-tag:sys_notify"
+        notify-send "" "" -i "$ICONS_CRITICAL/battery.png" \
+            --hint="string:wired-tag:sys_notify" -t 1100
     fi
 }
 
 charging_cable() {
-    echo 'Cable'
+    plugged_in="$(cat /sys/class/power_supply/AC/online)"
+
+    if [ "$plugged_in" -eq 1 ]; then
+        notify-send "" "" -i "$ICONS_DEFAULT/plug.png" \
+            --hint="string:wired-tag:sys_notify" -t 1100
+        exit 0
+    fi
+
+    notify-send "" "" -i "$ICONS_DEFAULT/unplug.png" \
+        --hint="string:wired-tag:sys_notify" -t 1100
+    exit 0
 }
 
 case "${OP}" in
